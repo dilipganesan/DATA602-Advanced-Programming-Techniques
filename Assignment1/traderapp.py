@@ -143,6 +143,7 @@ def performBuy():
     #price = input("Enter the Stock Price -->")
     if(symbol=="1"):
         price = get_quote("AAPL")
+        #price = input("Enter the Stock Price -->")
         appletransaction(price, stockvalue, symbol)
     elif(symbol== "2"):
         price = get_quote("AMZN")
@@ -168,6 +169,7 @@ def performSell():
     #price = float(price)
     if(symbol=="1"):
         price = get_quote("AAPL")
+        price = input("Enter the Stock Price -->")
         appleSelltransaction(price, stockvalue, symbol)
     elif(symbol=="2"):
         price = get_quote("AMZN")
@@ -194,12 +196,14 @@ def selectstock():
     print("[4] Intel Corporation")  
     print("[5] SNAP Inc")
 
+# Default utils function to get the rates.
 def getDefaultMarketValue():
     marketlist = [get_quote("AAPL"), get_quote("AMZN"), 
                   get_quote("MSFT"),get_quote("INTC"),
                   get_quote("SNAP")]
     return marketlist
 
+# This Util is used to scrap stock price from web.
 def get_quote(symbol):
     url2 = "https://finance.yahoo.com/quote/" + symbol +"?p=" +symbol
     req = urllib.request
@@ -208,6 +212,12 @@ def get_quote(symbol):
     price_box = soup.find('span', attrs={'class':'Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)'})
     price = price_box.text
     return float(price)
+
+# This Util function is to get the previous transaction price.
+def get_prev_record_inlist(processlist):
+    array = processlist[len(processlist)-2]
+    return array[3]
+
 ### End of Util Functions.
     
 """
@@ -267,9 +277,12 @@ def appletransaction(price, stockvalue, symbol):
         numerator = appleposition * applewap
         denominator = appleposition + stockvalue
         applewap=((numerator) + transaction)/(denominator)
-    if(len(applelist)>1):
-        appleupl=appleposition * (price - applewap)
-    print(df2)
+    # For UPL calculation checking if the price has changed from previous price    
+    if(len(applelist)>0):
+        previousprice = get_prev_record_inlist(applelist)
+        if(previousprice != price):
+            appleupl=appleposition * (price - applewap)
+    #print(df2)
     get_user_input()
 
 def appleSelltransaction(price, stockvalue, symbol):
@@ -300,9 +313,12 @@ def appleSelltransaction(price, stockvalue, symbol):
     appleposition=buyercounter - sellcounter
     #print("The apple position in sell" + appleposition)
     applerpl = applerpl + (stockvalue * (price - applewap))
-    if(len(applelist)>1):
-        appleupl = appleposition*(price - applewap)
-    print(df2)
+    # For UPL calculation checking if the price has changed from previous price
+    if(len(applelist)>0):
+        previousprice = get_prev_record_inlist(applelist)
+        if(previousprice != price):
+            appleupl=appleposition * (price - applewap)
+    #print(df2)
     get_user_input()
 
 
@@ -343,9 +359,11 @@ def amazontransaction(price, stockvalue, symbol):
         numerator = amazonposition * amazonwap
         denominator = amazonposition + stockvalue
         amazonwap=((numerator) + transaction)/(denominator)
-    if(len(amazonlist)>1):
-        amazonupl=amazonposition * (price - amazonwap)
-        #amazonupl = round(amazonupl,2)
+    # For UPL calculation checking if the price has changed from previous price
+    if(len(amazonlist)>0):
+        previousprice = get_prev_record_inlist(amazonlist)
+        if(previousprice != price):
+            amazonupl=amazonposition * (price - amazonwap)
     #print(df2)
     get_user_input()
     
@@ -377,8 +395,10 @@ def amazonselltransaction(price, stockvalue, symbol):
     dfama = pd.DataFrame(amazonlist)
     amazonposition=amazonbuyer - amazonsellcounter
     amazonrpl = amazonrpl + (stockvalue*(price-amazonwap))
-    if(len(amazonlist)>1):
-        amazonupl=amazonposition*(price-amazonwap)
+    if(len(amazonlist)>0):
+        previousprice = get_prev_record_inlist(amazonlist)
+        if(previousprice != price):
+            amazonupl=amazonposition * (price - amazonwap)
     #print(df2)
     get_user_input()
 
@@ -420,9 +440,10 @@ def microsofttransaction(price, stockvalue, symbol):
         numerator = microposition * microwap
         denominator = microposition + stockvalue
         microwap=((numerator) + transaction)/(denominator)
-    if(len(microlist)>1):
-        microupl=microposition * (price - microwap)
-        #amazonupl = round(amazonupl,2)
+    if(len(microlist)>0):
+        previousprice = get_prev_record_inlist(microlist)
+        if(previousprice != price):
+            microupl=microposition * (price - microwap)
     #print(df2)
     get_user_input()
     
@@ -454,8 +475,10 @@ def microsoftselltransaction(price, stockvalue, symbol):
     dfmicro = pd.DataFrame(microlist)
     microposition=microbuyer - microsellcounter
     microrpl = microrpl + (stockvalue*(price-microwap))
-    if(len(microlist)>1):
-        microupl=microposition*(price-microwap)
+    if(len(microlist)>0):
+        previousprice = get_prev_record_inlist(microlist)
+        if(previousprice != price):
+            microupl=microposition * (price - microwap)
     #print(df2)
     get_user_input()
 
@@ -497,9 +520,10 @@ def intctransaction(price, stockvalue, symbol):
         numerator = intelposition * intelwap
         denominator = intelposition + stockvalue
         intelwap=((numerator) + transaction)/(denominator)
-    if(len(intellist)>1):
-        intelupl=intelposition * (price - intelwap)
-        #amazonupl = round(amazonupl,2)
+    if(len(intellist)>0):
+        previousprice = get_prev_record_inlist(intellist)
+        if(previousprice != price):
+            intelupl=intelposition * (price - intelwap) 
     #print(df2)
     get_user_input()
     
@@ -531,8 +555,11 @@ def intcselltransaction(price, stockvalue, symbol):
     dfintel = pd.DataFrame(intellist)
     intelposition=intelbuyer - intelsellcounter
     intelrpl = intelrpl + (stockvalue*(price-intelwap))
-    if(len(intellist)>1):
-        intelupl=intelposition*(price-intelwap)
+    #Checking if there is a change in price.
+    if(len(intellist)>0):
+        previousprice = get_prev_record_inlist(intellist)
+        if(previousprice != price):
+            intelupl=intelposition * (price - intelwap)
     #print(df2)
     get_user_input()
 
@@ -574,9 +601,10 @@ def snaptransaction(price, stockvalue, symbol):
         numerator = snapposition * snapwap
         denominator = snapposition + stockvalue
         snapwap=((numerator) + transaction)/(denominator)
-    if(len(snaplist)>1):
-        snapupl=snapposition * (price - snapwap)
-        #amazonupl = round(amazonupl,2)
+    if(len(snaplist)>0):
+        previousprice = get_prev_record_inlist(snaplist)
+        if(previousprice != price):
+            snapupl=snapposition * (price - snapwap)
     #print(df2)
     get_user_input()
     
@@ -608,8 +636,10 @@ def snapselltransaction(price, stockvalue, symbol):
     dfsnap = pd.DataFrame(snaplist)
     snapposition=snapbuyer - snapsellcounter
     snaprpl = snaprpl + (stockvalue*(price-snapwap))
-    if(len(snaplist)>1):
-        snapupl=intelposition*(price-snapwap)
+    if(len(snaplist)>0):
+        previousprice = get_prev_record_inlist(snaplist)
+        if(previousprice != price):
+            snapupl=snapposition * (price - snapwap)
     #print(df2)
     get_user_input()  
     
