@@ -8,4 +8,4 @@ RUN git clone https://04544f94f4d3bca2e9f803da759b0fe9352fb014@github.com/dilipg
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
-CMD [ "python", "traderapp.py" ]
+CMD [ "python", "/usr/src/app/traderapp.py" ]
