@@ -2,7 +2,7 @@ FROM python:3.5
 
 WORKDIR /usr/src/app
 
-https://04544f94f4d3bca2e9f803da759b0fe9352fb014@github.com/dilipganesan/DATA602.git
+git clone https://04544f94f4d3bca2e9f803da759b0fe9352fb014@github.com/dilipganesan/DATA602.git
 
 cd Assignment1
 
