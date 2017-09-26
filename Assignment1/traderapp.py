@@ -26,6 +26,7 @@ dfama = pd.DataFrame()
 dfmicro = pd.DataFrame() 
 dfintel = pd.DataFrame()
 dfsnap = pd.DataFrame()
+# This counter is used to order records in blotter based on transaction time.
 ordercounter = 0
 
 
@@ -180,9 +181,12 @@ def performSell():
     elif(symbol == "4"):
         price = get_quote("INTC")
         intcselltransaction(price, stockvalue, symbol)
-    else:
+    elif(symbol == "5"):
         price = get_quote("SNAP")
         snapselltransaction(price, stockvalue, symbol)
+    else:
+        print("\t***  Enter Stock Option 1- 5 !  ***")
+                
     #showPandL()
 
 
@@ -234,7 +238,7 @@ def showBlotter():
     else:
         df3 = df2.append(dfama).append(dfmicro).append(dfintel).append(dfsnap)
         df3.columns = ["Side","Ticker","Volume","Price","Cost", "Time","Order"]
-        df3.nlargest(50,"Order")
+        df3.nlargest(50,"Order") # For now set to top 50 trasnsactions
         print(df3)
     get_user_input()
     
@@ -660,9 +664,40 @@ def showPandL():
     global microrpl
     global intelrpl
     global snaprpl
+    global appleupl
+    global amazonupl
+    global microupl
+    global intelupl
+    global snapupl
+    
+    appleprice = 0.00
+    amazonprice = 0.00
+    microprice = 0.00
+    intelprice = 0.00
+    snapprice = 0.00
     
     defaultmarketvalue = getDefaultMarketValue()
-    # Restting all the values, when all the shares bought are sold.
+    #print("defaultmarketvalue - >" +str(float(defaultmarketvalue[0])))
+    
+    appleprice = float(defaultmarketvalue[0])
+    amazonprice = float(defaultmarketvalue[1])
+    microprice = float(defaultmarketvalue[2])
+    intelprice = float(defaultmarketvalue[3])
+    snapprice = float(defaultmarketvalue[4])
+    
+    # If there is a market fluctution and based on current price upl will change
+    if(appleposition > 0 and applewap > 0):
+        appleupl= appleposition * (appleprice - applewap)
+    if(amazonposition > 0 and amazonwap > 0):
+        amazonupl=amazonposition * (amazonprice - amazonwap)
+    if(microposition > 0 and microwap > 0):
+        microupl=microposition * (microprice - microwap)
+    if(intelposition > 0 and intelwap > 0):
+        intelupl=intelposition * (intelprice - intelwap) 
+    if(snapposition > 0 and snapwap > 0):
+        snapupl=snapposition * (snapprice - snapwap)
+        
+    # Resetting all the values,when all the shares bought are sold.Full cycle
     if(appleposition==0):
         applewap=0
         applerpl=0
@@ -683,9 +718,9 @@ def showPandL():
     pandl = OrderedDict([ ('Ticker', ['AAPL', 'AMZN', 'MSFT','INTC','SNAP', "Cash"]),
           ('Position', [appleposition, amazonposition, microposition, 
                         intelposition ,snapposition, portfolioWorth ]),
-          ('Market',   [defaultmarketvalue[0],defaultmarketvalue[1],
-                       defaultmarketvalue[2],defaultmarketvalue[3],defaultmarketvalue[4], 
-                       portfolioWorth]),
+          ('Market',   [appleprice,amazonprice,
+                       microprice,intelprice,snapprice, 
+                       ""]),
           ('WAP', [applewap, amazonwap, microwap, intelwap, snapwap, ""]),
           ('UPL', [appleupl, amazonupl, microupl, intelupl, snapupl,""]),
           ('RPL', [applerpl, amazonrpl, microrpl, intelrpl, snaprpl,""])] )
