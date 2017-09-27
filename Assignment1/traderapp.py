@@ -155,9 +155,11 @@ def performBuy():
     elif(symbol == "4"):
         price = get_quote("INTC")
         intctransaction(price, stockvalue, symbol)
-    else:
+    elif(symbol == "5"):
         price = get_quote("SNAP")
         snaptransaction(price, stockvalue, symbol)
+    else:
+        print("\t***  Enter Stock Option 1- 5 !  ***")
     #showPandL()
     
 def performSell():
@@ -170,7 +172,7 @@ def performSell():
     #price = float(price)
     if(symbol=="1"):
         price = get_quote("AAPL")
-        price = input("Enter the Stock Price -->")
+        #price = input("Enter the Stock Price -->")
         appleSelltransaction(price, stockvalue, symbol)
     elif(symbol=="2"):
         price = get_quote("AMZN")
