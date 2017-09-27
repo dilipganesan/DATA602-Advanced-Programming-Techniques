@@ -15,7 +15,7 @@ from datetime import datetime
 
 
 """
-This is the function for Title Bar
+Initializing some variables.
 """
 
 # Size of protfolio.
@@ -86,6 +86,9 @@ snapsellcounter = 0
 snapsellpricecounter = 0
 
 
+"""
+This is the function for Title Bar
+"""
 def get_title_app():
     print("\t**********************************************")
     print("\t***  Trader App Welcomes You!  ***")
