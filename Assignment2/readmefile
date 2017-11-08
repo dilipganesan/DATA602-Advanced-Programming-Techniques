@@ -1,0 +1,13 @@
+Read Me File and Notes for Prof J
+
+1. docker build -t dilipganesan/traderwebapp .
+2. docker run -d -p 5000:5000 dilipganesan/traderwebap
+3. To Launch the application. 
+http://0.0.0.0:5000/main
+4. I have put in the docker file in docker hub dilipganesan/traderwebapp
+5. I have the option of both docker compose and docker build.
+6. There is a option to enter the price from html for unit testing. Currently the code is commented in html.
+7. Used Plotly for graphs.
+8. Used mlabs for Mongo DB. Username:dilipganesan/Password:Appagan7883!
+9. Based on your comments on assignment 1, have changed the code to be generic to handle any stock.
+10. Thanks Dilip G
