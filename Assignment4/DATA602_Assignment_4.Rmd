@@ -1,0 +1,134 @@
+---
+title: 'DATA 604:  Assignment 4'
+author: "Dilip Ganesan, 2017"
+subtitle: TSLA Stock Analysis Using R
+output:
+  html_document:
+    code_folding: show
+    highlight: zenburn
+    theme: lumen
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+if (!require("quantmod")) {
+  install.packages('quantmod')
+  library(quantmod)
+}
+
+if(!require("ggplot2")) {
+  install.packages('ggplot2')
+  library(ggplot2)
+}
+
+if(!require("plyr")) {
+  install.packages('plyr')
+  library(plyr)
+}
+
+if(!require("tidyquant")) {
+  install.packages('tidyquant')
+  library(tidyquant)
+}
+```
+
+## Data Wrangling:
+
+```{r}
+
+# Step 1: Selecting a Stock Market and retreiving the stocks high's/low's/closing
+
+# Loading the Tesla Corporation Stock Prices.
+getSymbols("TSLA", src = "google",getSymbols.google.warning=FALSE)
+
+df = fortify(TSLA)
+#names(df)
+df=plyr::rename(df,c("Index"="Date","TSLA.Open"="Open","TSLA.High"="High","TSLA.Low"="Low","TSLA.Close"="Close","TSLA.Volume"="Volume"))
+df$Date<-as.Date(df$Date)
+
+```
+
+## Basic Plots of TSLA:
+
+```{r}
+#Basic Plotting of TSLA Stocks
+df %>%
+  ggplot(aes(x = Date, y = Close,color=Close)) +
+  geom_point() +
+  labs(title = "Close Price", x = "Yearly",y="Close Price")
+
+
+# Candle Charts 
+df %>%
+    ggplot(aes(x = Date, y = Close)) +
+    geom_candlestick(aes(open = Open, high = High, low = Low, close = Close)) +
+    geom_ma(color = "darkgreen")
+
+# Candle Charts with focus on Last Few Weeks of TSLA shares.
+df %>%
+    ggplot(aes(x = Date, y = Close)) +
+    geom_candlestick(aes(open = Open, high = High, low = Low, close = Close)) +
+    geom_ma(color = "darkgreen") +
+    coord_x_date(xlim = c(today() - weeks(4), today()),
+                 ylim = c(250, 400))
+
+```
+
+## Moving Averages:
+
+```{r}
+
+# Candle Charts and Moving Averages Using Quant Mod Functions
+candleChart(TSLA, up.col = "black", dn.col = "red", theme = "white")
+addSMA(n = c(20, 50, 200))
+
+```
+
+
+## Standard Deviations:
+
+```{r}
+
+# Standard Deviation using the TTR Packages.
+df$Volatility=runSD(df$Close,n=20)
+# Subsetting to make sure the plot is only for 2017 data.
+newdf = df[ which(df$Date>='2017-01-01'), ]
+
+
+newdf %>%
+  ggplot(aes(x = Date, y = Volatility,color=Volatility)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "SD of TSLA", x = "Yearly",y="Volatility")
+
+```
+
+
+## Bollinger Bands:
+
+```{r}
+
+# Bollinger Bands using Moving Averages Plot and Sd as 2 using plain GGPlot2
+df %>%
+    ggplot(aes(x = Date, y = Close)) +
+    geom_line() +           
+    geom_bbands(aes(high = High, low = Low, close = Close), ma_fun = SMA, n = 50, sd =2) +
+    coord_x_date(xlim = c(today() - years(1), today()), ylim = c(150, 400))
+
+```
+
+
+
+##Reference : 
+**Packages**
+QuantMod/
+TTR/
+GGPlot2/
+TidyQuant
+
+
